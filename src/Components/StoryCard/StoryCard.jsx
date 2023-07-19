@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import CardStyles from "./StoryCard.Module.css";
-import StoryImg from "../../images/WallpaperDog-20567151 1.png";
-import StoryImg2 from "../../images/fantacy.png";
+
 import ViewStoryModal from "../../ModalForms/ViewStoryModal/ViewStoryModal";
 
 const StoryCard = ({ story, stories }) => {
