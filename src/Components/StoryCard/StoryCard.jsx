@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import CardStyles from "./StoryCard.Module.css";
-
+import CardStyles from "./StoryCard.module.css";
 import ViewStoryModal from "../../ModalForms/ViewStoryModal/ViewStoryModal";
 
 const StoryCard = ({ story, stories }) => {
