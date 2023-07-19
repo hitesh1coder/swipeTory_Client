@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import storyModelStyles from "./AddStory.module.css";
-import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
 import closeIcon from "../../images/icons8-close-50 (2).png";
-
+import toast, { Toaster } from "react-hot-toast";
 const AddStoryModal = ({ handleCloseAddStoryModal }) => {
   const userData = JSON.parse(localStorage.getItem("swipetory_user"));
   const userId = userData.userid;
+  const token = userData.token;
   const [forms, setForms] = useState([
     {
       heading: "",
@@ -123,6 +122,7 @@ const AddStoryModal = ({ handleCloseAddStoryModal }) => {
 
     setError(false);
 
+    toast.loading("loading...");
     try {
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_HOST}/story/create/${userId}`,
@@ -130,14 +130,17 @@ const AddStoryModal = ({ handleCloseAddStoryModal }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            token: token,
           },
           body: JSON.stringify({ forms }),
         }
       );
       console.log(response);
       if (response.ok) {
-        console.log("Forms submitted successfully");
+        toast.success("Forms submitted successfully");
+        handleCloseAddStoryModal();
       } else {
+        toast.error("Error submitting forms:");
         console.error("Error submitting forms:", response.status);
       }
     } catch (error) {
@@ -150,6 +153,7 @@ const AddStoryModal = ({ handleCloseAddStoryModal }) => {
         className={storyModelStyles.model_wrapper}
         onClick={handleCloseAddStoryModal}
       ></div>
+      <Toaster />
       <div className={storyModelStyles.addstory_model}>
         <div className={storyModelStyles.addstory_model_form}>
           <span

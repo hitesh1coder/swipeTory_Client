@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import RegisterModelStyles from "./RegisterModel.module.css";
 import closeIcon from "../../images/icons8-close-50 (2).png";
-import { toast, ToastContainer } from "react-toastify";
+import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 
 const RegisterModel = ({ handleCloseRegisterModal }) => {
@@ -9,73 +9,54 @@ const RegisterModel = ({ handleCloseRegisterModal }) => {
     username: "",
     password: "",
   });
-
-  const handleClose = () => {
-    setLoginModel(true);
-  };
   const [error, setError] = useState(false);
   const handleChange = (e) => {
     setFormValue({ ...formValue, [e.target.name]: e.target.value });
   };
-  console.log(import.meta.env.VITE_SERVER_HOST);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if username and password are provided
     if (!formValue.username || !formValue.password) {
       setError(true);
-    } else {
-      setError(false);
-      try {
-        const config = {
-          headers: { "Content-Type": "application/json" },
-        };
-        const { username, password } = formValue;
-        const user = await axios.post(
-          `${import.meta.env.VITE_SERVER_HOST}/auth/register`,
-          { username, password },
-          config
-        );
-        const { data } = user;
-        console.log(data);
-        localStorage.setItem("swipetory_user", JSON.stringify(data));
-        // toast.success(`${data.message}`, {
-        //   position: "top-center",
-        //   autoClose: 3000,
-        //   hideProgressBar: false,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined,
-        //   theme: "light",
-        // });
-        toast.success("🦄 Wow so easy!", {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-        setTimeout(() => {
-          handleCloseRegisterModal();
-        }, 3000);
+      return;
+    }
 
-        console.log(data);
-      } catch (error) {
-        console.log(error);
-        toast.error(`something went wrong`, {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+    setError(false);
+
+    try {
+      const config = {
+        headers: { "Content-Type": "application/json" },
+      };
+
+      const { username, password } = formValue;
+
+      // Make POST request to register user
+      const response = await axios.post(
+        `${import.meta.env.VITE_SERVER_HOST}/auth/register`,
+        { username, password },
+        config
+      );
+
+      const { data } = response;
+
+      // Check if registration was successful
+      if (data.status === "success") {
+        toast.success("User Registered Successfully");
+      } else {
+        toast.error("Something went wrong");
       }
+
+      // Store user data in local storage
+      localStorage.setItem("swipetory_user", JSON.stringify(data));
+
+      setTimeout(() => {
+        handleCloseRegisterModal();
+      }, 3000);
+    } catch (error) {
+      toast.error("Something went wrong");
+      console.log(error);
     }
   };
   return (
@@ -84,18 +65,7 @@ const RegisterModel = ({ handleCloseRegisterModal }) => {
         className={RegisterModelStyles.register_model_wrapper}
         onClick={handleCloseRegisterModal}
       ></div>
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
+      <Toaster />
       <div className={RegisterModelStyles.register_model}>
         <div className={RegisterModelStyles.register_model_form}>
           <span onClick={handleCloseRegisterModal}>

@@ -10,6 +10,9 @@ import axios from "axios";
 
 const ViewStoryModal = ({ closeViewStoryModal, stories, storyId }) => {
   const userData = JSON.parse(localStorage.getItem("swipetory_user"));
+  const userBookmarkedStories = userData.bookmarks?.some(
+    (story) => story._id === storyId
+  );
   const userId = userData.userid;
   const [inProgress, setInProgress] = useState(false);
   const [currentStoryIndex, setCurrentStoryIndex] = useState(
@@ -18,6 +21,8 @@ const ViewStoryModal = ({ closeViewStoryModal, stories, storyId }) => {
   const [currentStory, setCurrentStory] = useState(stories[currentStoryIndex]);
   const [liked, setLiked] = useState(currentStory?.likes.includes(userId));
   const [likes, setLikes] = useState(currentStory?.likes.length);
+  const [copySuccess, setCopySucces] = useState("");
+  const [bookmarked, setBookmarked] = useState(userBookmarkedStories);
 
   const firstRender = useRef(true);
 
@@ -38,7 +43,8 @@ const ViewStoryModal = ({ closeViewStoryModal, stories, storyId }) => {
 
   const playStories = () => {
     setLiked((prevLiked) => !prevLiked);
-    setLikes((prevLikes) => (prevLiked ? prevLikes + 1 : prevLikes - 1));
+    setLikes((prevLikes) => (liked ? prevLikes + 1 : prevLikes - 1));
+    setInProgress((prev) => !prev);
     setCurrentStoryIndex((prevIndex) => {
       const isLastIndex = prevIndex === stories.length - 1;
       if (isLastIndex) {
@@ -57,7 +63,7 @@ const ViewStoryModal = ({ closeViewStoryModal, stories, storyId }) => {
   }, [currentStoryIndex]);
 
   useEffect(() => {
-    const interval = setInterval(playStories, 8000);
+    const interval = setInterval(playStories, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -71,6 +77,37 @@ const ViewStoryModal = ({ closeViewStoryModal, stories, storyId }) => {
     });
   };
 
+  const handleCopyToClipboard = async (copyMe) => {
+    try {
+      await navigator.clipboard.writeText(copyMe);
+      setCopySucces("copy to clipboard");
+      setTimeout(() => {
+        setCopySucces("");
+      }, 3000);
+    } catch (error) {
+      setCopySucces("failed to copy");
+    }
+  };
+  setTimeout(() => {
+    setCopySucces("");
+  }, 3000);
+  const addToBookmarks = async (storyData) => {
+    try {
+      const headers = { "Content-Type": "application/json" };
+      const url = `${
+        import.meta.env.VITE_SERVER_HOST
+      }/story/bookmark/${userId}`;
+      const config = { headers };
+      const response = await axios.post(url, { storyData }, config);
+      if (response.status === "ok") {
+        setBookmarked(true);
+      } else {
+        setBookmarked(false);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const handleLike = async () => {
     try {
       const url = `${import.meta.env.VITE_SERVER_HOST}/story/like/${storyId}`;
@@ -80,7 +117,6 @@ const ViewStoryModal = ({ closeViewStoryModal, stories, storyId }) => {
       console.log(error);
     }
   };
-
   return (
     <>
       <div
@@ -103,21 +139,20 @@ const ViewStoryModal = ({ closeViewStoryModal, stories, storyId }) => {
             <img
               className={ModalStoryStyles.share_btn}
               src={shareIcon}
+              onClick={() => handleCopyToClipboard(stories[currentStoryIndex])}
               alt="share"
             />
           </div>
           <div className={ModalStoryStyles.storycount}>
-            {stories.map((data, i) => (
-              <div
-                key={i}
-                style={{
-                  transition: `ease-in-out 15s width`,
-                  width: inProgress ? "100%" : "0%",
-                }}
-                className={ModalStoryStyles.storybar}
-              ></div>
-            ))}
+            <div
+              style={{
+                transition: `ease-in 5s width`,
+                width: inProgress ? "100%" : "0%",
+              }}
+              className={ModalStoryStyles.storybar}
+            ></div>
           </div>
+          <h2 className={ModalStoryStyles.copy_success}>{copySuccess}</h2>
           <div className={ModalStoryStyles.card_details}>
             <h2 className={ModalStoryStyles.heading}>
               {stories[currentStoryIndex].heading}
@@ -129,7 +164,9 @@ const ViewStoryModal = ({ closeViewStoryModal, stories, storyId }) => {
           <div className={ModalStoryStyles.btns2}>
             <img
               className={ModalStoryStyles.bookmark_btn}
-              src={bookMarkIcon}
+              onClick={() => addToBookmarks(stories[currentStoryIndex])}
+              style={{ pointerEvents: bookmarked ? "none" : "auto" }}
+              src={bookmarked ? bookMarkedIcon : bookMarkIcon}
               alt="close"
             />
             <img
@@ -138,7 +175,9 @@ const ViewStoryModal = ({ closeViewStoryModal, stories, storyId }) => {
               src={liked ? likedIcon : likeIcon}
               alt="share"
             />
-            <span>{stories[currentStoryIndex]?.likes.length}</span>
+            <span className={ModalStoryStyles.likes_count}>
+              {stories[currentStoryIndex]?.likes.length}
+            </span>
           </div>
         </div>
         <div onClick={goToNextStory} className={ModalStoryStyles.next_btn}>

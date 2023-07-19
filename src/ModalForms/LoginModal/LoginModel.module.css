@@ -77,3 +77,20 @@
   border-radius: 1rem;
   cursor: pointer;
 }
+/* Responcive  code  */
+@media only screen and (max-width: 470px) {
+  .login_model {
+    width: 85vw;
+    height: 60vh;
+    border-radius: 0.4rem;
+  }
+  .login_model_form {
+    width: 100%;
+  }
+  .login__btn {
+    width: 90%;
+    position: relative;
+    right: -1rem;
+    bottom: -2rem;
+  }
+}

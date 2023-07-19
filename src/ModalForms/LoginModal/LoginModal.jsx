@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import loginModalStyles from "./LoginModel.module.css";
 import closeIcon from "../../images/icons8-close-50 (2).png";
-import { ToastContainer, toast } from "react-toastify";
+import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 
 const LoginModel = ({ handleCloseLoginModal }) => {
@@ -26,39 +26,23 @@ const LoginModel = ({ handleCloseLoginModal }) => {
         };
         const { username, password } = formValue;
         const user = await axios.post(
-          "http://localhost:5000/auth/login",
+          `${import.meta.env.VITE_SERVER_HOST}/auth/login`,
           { username, password },
           config
         );
         const { data } = user;
-        console.log(data);
+        if (data.status === "success") {
+          toast.success("User Login Successfully");
+        } else {
+          toast.error("Something went wrong");
+        }
         localStorage.setItem("swipetory_user", JSON.stringify(data));
 
-        toast.success("login successS", {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
         setTimeout(() => {
           handleCloseLoginModal();
         }, 3000);
       } catch (error) {
         console.log(error.response);
-        toast.error(`${error.response.data.message}`, {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
       }
     }
   };
@@ -68,20 +52,8 @@ const LoginModel = ({ handleCloseLoginModal }) => {
         className={loginModalStyles.login_model_wrapper}
         onClick={handleCloseLoginModal}
       ></div>
+      <Toaster />
       <div className={loginModalStyles.login_model}>
-        <ToastContainer
-          position="top-center"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
-
         <div className={loginModalStyles.login_model_form}>
           <span onClick={handleCloseLoginModal}>
             <img src={closeIcon} alt="close" />

@@ -63,8 +63,17 @@
   justify-content: space-between;
   width: 100%;
   bottom: 0.3rem;
-  padding: 0 2rem;
+  padding: 0 1rem;
   position: absolute;
+}
+.copy_success {
+  position: absolute;
+  color: gray;
+  top: 50%;
+  left: 2rem;
+  background: #fff;
+  border: 2px solid gray;
+  border-radius: 1rem;
 }
 
 .storybar {
@@ -88,6 +97,14 @@
   width: 95%;
   position: absolute;
   color: #fff;
+}
+.like_btn {
+  position: absolute;
+  right: 2rem;
+}
+.likes_count {
+  color: #fff;
+  font-weight: 600;
 }
 .next_btn,
 .prev_btn {

@@ -11,7 +11,8 @@ const StoryCard = ({ story, stories }) => {
   const closeViewStoryModal = () => setViewStoryModal(false);
 
   const renderStoryBars = () => {
-    return stories?.map((data, i) => {
+    const renderStories = stories.slice(1, 5);
+    return renderStories?.map((data, i) => {
       return (
         <div
           key={i}

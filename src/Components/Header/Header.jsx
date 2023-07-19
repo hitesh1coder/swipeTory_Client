@@ -1,21 +1,36 @@
 import HeaderStyles from "./Header.module.css";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import userAvatar from "../../images/userIcon.png";
 import bookMarkIcon from "../../images/icons8-bookmark-50.png";
+import closeIcon from "../../images/icons8-close-50 (1).png";
+import menuIcon from "../../images/icons8-menu-24.png";
 
 const Header = ({
   setLoginModal,
   setRegisterModal,
   setAddStoryModal,
-  isMobile,
-  setIsMobile,
+  handleShowBookmark,
+  setShowBookmarks,
 }) => {
   const getUser = JSON.parse(localStorage.getItem("swipetory_user"));
   const user = getUser;
+  const username = user?.username;
+  const navRef = useRef();
   const [openMenu, setOpenMenu] = useState(false);
+  const showNavbar = () => {
+    navRef.current.classList.toggle(`${HeaderStyles.responsive_nav}`);
+  };
+
+  const handleLogOut = () => {
+    localStorage.removeItem("swipetory_user");
+    setOpenMenu(false);
+  };
   const renderLoggedInButtons = () => (
     <>
-      <button onClick={() => {}} className={HeaderStyles.register_btn}>
+      <button
+        onClick={handleShowBookmark}
+        className={HeaderStyles.register_btn}
+      >
         <span>
           <img src={bookMarkIcon} alt="bookmark" />
         </span>
@@ -27,8 +42,37 @@ const Header = ({
       >
         Add story
       </button>
-      <span>{user.username}</span>
-      <img className={HeaderStyles.useravatar} src={userAvatar} alt="" />
+
+      <button onClick={handleLogOut} className={HeaderStyles.logout_mobile_btn}>
+        {" "}
+        logout
+      </button>
+      <div>
+        <img
+          onClick={() => setOpenMenu(!openMenu)}
+          className={HeaderStyles.useravatar}
+          src={userAvatar}
+          alt="user"
+        />
+        <div
+          style={{ display: openMenu ? `block` : `none` }}
+          className={HeaderStyles.menu}
+        >
+          <ul>
+            <h2>{username}</h2>
+            <button onClick={handleLogOut} className={HeaderStyles.logout_btn}>
+              {" "}
+              logout
+            </button>
+          </ul>
+        </div>
+      </div>
+      <button
+        onClick={showNavbar}
+        className={`${HeaderStyles.nav_btn} ${HeaderStyles.nav_close_btn}`}
+      >
+        <img src={closeIcon} alt="closeIcon" />
+      </button>
     </>
   );
 
@@ -47,74 +91,32 @@ const Header = ({
         >
           Sign In
         </button>
+        <button
+          onClick={showNavbar}
+          className={`${HeaderStyles.nav_btn} ${HeaderStyles.nav_close_btn}`}
+        >
+          <img src={closeIcon} alt="closeIcon" />
+        </button>
       </>
     );
   };
 
-  const renderMenuButtons = () => (
-    <>
-      <img
-        className={HeaderStyles.useravatar}
-        src={userAvatar}
-        alt="userAvatar"
-      />
-      <button onClick={() => {}} className={HeaderStyles.register_btn}>
-        <span>
-          <img src={bookMarkIcon} alt="bookmark" />
-        </span>
-        Bookmarks
-      </button>
-      <button
-        onClick={() => {
-          setAddStoryModal(true);
-        }}
-        className={HeaderStyles.register_btn}
-      >
-        Add story
-      </button>
-    </>
-  );
-
   return (
     <>
       <div className={HeaderStyles.container}>
-        <div className={HeaderStyles.logo}>Swip Tory</div>
         <div
-          // style={{ display: isMobile ? "none" : "block" }}
-          className={
-            isMobile
-              ? `${HeaderStyles.nav_right}`
-              : `${HeaderStyles.mobile_nav}`
-          }
+          onClick={() => setShowBookmarks(false)}
+          className={HeaderStyles.logo}
         >
-          <div className={HeaderStyles.nav_btns}>
-            {user ? renderLoggedInButtons() : renderLoggedOutButtons()}
-          </div>
+          Swip Tory
         </div>
-        <span
-          onClick={() => {
-            setIsMobile(!isMobile);
-            setOpenMenu(!openMenu);
-          }}
-          style={{ pointerEvents: user ? "auto" : "none" }}
-          className={HeaderStyles.menu}
-        >
-          =
+
+        <div ref={navRef} className={HeaderStyles.nav_btns}>
+          {user ? renderLoggedInButtons() : renderLoggedOutButtons()}
+        </div>
+        <span onClick={showNavbar} className={HeaderStyles.nav_btn}>
+          <img src={menuIcon} alt="menu" />
         </span>
-      </div>
-      <div
-        style={{ display: openMenu ? "block" : "none" }}
-        className={HeaderStyles.drop_down}
-      >
-        <div
-          className={
-            isMobile
-              ? `${HeaderStyles.nav_btns_mobile}`
-              : `${HeaderStyles.nav_btns}`
-          }
-        >
-          {user ? renderMenuButtons() : renderLoggedOutButtons()}
-        </div>
       </div>
     </>
   );
