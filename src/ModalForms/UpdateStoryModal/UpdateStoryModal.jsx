@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import storyModelStyles from "../AddStoryModal/AddStory.Module.css";
+import storyModelStyles from "../AddStoryModal/AddStory.module.css";
 import closeIcon from "../../images/icons8-close-50 (2).png";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
