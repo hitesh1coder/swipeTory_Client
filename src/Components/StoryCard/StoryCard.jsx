@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import CardStyles from "./StoryCard.module.css";
 import ViewStoryModal from "../../ModalForms/ViewStoryModal/ViewStoryModal";
 
-const StoryCard = ({ story, stories }) => {
+const StoryCard = ({ story, stories, setShowRegisterModal }) => {
   const [viewStoryModal, setViewStoryModal] = useState(false);
   const [storyId, setStoryId] = useState();
 
@@ -38,6 +38,7 @@ const StoryCard = ({ story, stories }) => {
       </div>
       {viewStoryModal && (
         <ViewStoryModal
+          setShowRegisterModal={setShowRegisterModal}
           storyId={storyId}
           stories={stories}
           closeViewStoryModal={closeViewStoryModal}

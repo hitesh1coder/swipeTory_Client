@@ -39,7 +39,7 @@ const UpdateStoryModal = ({ handleCloseUpdateStoryModal, storyData }) => {
           config
         );
 
-        if (data.status === 200) {
+        if (updatedJob.status === 200) {
           toast.success(" story updated Successfully");
         } else {
           toast.error(" story not updated ");
@@ -48,6 +48,9 @@ const UpdateStoryModal = ({ handleCloseUpdateStoryModal, storyData }) => {
         console.log(error);
       }
     }
+    setTimeout(() => {
+      handleCloseUpdateStoryModal();
+    }, 3000);
   };
 
   return (

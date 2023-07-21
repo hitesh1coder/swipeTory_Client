@@ -8,12 +8,17 @@ import likedIcon from "../../images/icons8-heart-50 (1).png";
 import likeIcon from "../../images/icons8-heart-50.png";
 import axios from "axios";
 
-const ViewStoryModal = ({ closeViewStoryModal, stories, storyId }) => {
-  const userData = JSON.parse(localStorage.getItem("swipetory_user"));
-  const userBookmarkedStories = userData.bookmarks?.some(
+const ViewStoryModal = ({
+  closeViewStoryModal,
+  stories,
+  storyId,
+  setShowRegisterModal,
+}) => {
+  const user = JSON.parse(localStorage.getItem("swipetory_user"));
+  const userBookmarkedStories = user?.bookmarks?.some(
     (story) => story._id === storyId
   );
-  const userId = userData.userid;
+  const userId = user?.userid;
   const [inProgress, setInProgress] = useState(false);
   const [currentStoryIndex, setCurrentStoryIndex] = useState(
     stories.findIndex((story) => story._id === storyId)
@@ -117,6 +122,10 @@ const ViewStoryModal = ({ closeViewStoryModal, stories, storyId }) => {
       console.log(error);
     }
   };
+  const handleUserExitst = () => {
+    closeViewStoryModal();
+    setShowRegisterModal(true);
+  };
   return (
     <>
       <div
@@ -164,14 +173,19 @@ const ViewStoryModal = ({ closeViewStoryModal, stories, storyId }) => {
           <div className={ModalStoryStyles.btns2}>
             <img
               className={ModalStoryStyles.bookmark_btn}
-              onClick={() => addToBookmarks(stories[currentStoryIndex])}
+              onClick={() =>
+                user
+                  ? addToBookmarks(stories[currentStoryIndex])
+                  : handleUserExitst()
+              }
               style={{ pointerEvents: bookmarked ? "none" : "auto" }}
               src={bookmarked ? bookMarkedIcon : bookMarkIcon}
               alt="close"
             />
             <img
               className={ModalStoryStyles.like_btn}
-              onClick={handleLike}
+              onClick={() => (user ? handleLike() : handleUserExitst())}
+              style={{ pointerEvents: liked ? "none" : "auto" }}
               src={liked ? likedIcon : likeIcon}
               alt="share"
             />

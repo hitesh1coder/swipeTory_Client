@@ -91,6 +91,7 @@ const Home = () => {
           {storyCategory.map((category, i) => {
             return (
               <StoriesSection
+                setShowRegisterModal={setShowRegisterModal}
                 Heading={"Top Stories About"}
                 name={category.name}
                 key={i}

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import CategoryStyles from "./Category.module.css";
 import { categories } from "../Category";
 const Categories = ({ onSelectedValue }) => {
+  console.log(onSelectedValue);
   const [selectedId, setSelectedId] = useState(0);
   const handleSelectTeck = (data, id) => {
     onSelectedValue(data.name);
